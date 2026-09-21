@@ -168,9 +168,9 @@ abstract class Env {
 
   static String? get googleClientSecret => _instance.googleClientSecret;
 
-  static bool? get useWebAuth => _instance.useWebAuth ?? false;
+  static bool get useWebAuth => _instance.useWebAuth ?? false;
 
-  static bool? get useAuthCustomToken => _instance.useAuthCustomToken ?? false;
+  static bool get useAuthCustomToken => _instance.useAuthCustomToken ?? false;
 }
 
 abstract class EnvFields {
