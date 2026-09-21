@@ -7,7 +7,7 @@ This directory is the deployment boundary for the LifeOS-owned Omi fork.
 The Omi fork is the capture/device subsystem. It is not the canonical LifeOS memory store.
 
 ```
-Omi wearable / iPhone
+Omi wearable / iPhone / Apple Watch
         |
         v
 https://<OMI_HOST>
@@ -62,9 +62,13 @@ Never commit:
 1. Fill the real hostname and secrets.
 2. Bring up the stack and smoke-test the API.
 3. Create the LifeOS projection/sink from completed Omi conversations into the existing LifeOS ingestion pipeline.
-4. Build the iPhone app with `app/scripts/build-lifeos-ios.sh`.
-5. Verify capture -> transcript -> Omi operational record -> LifeOS canonical record end-to-end.
+4. Build the iPhone + embedded Apple Watch app with `app/scripts/build-lifeos-ios.sh`.
+5. Verify Watch/phone capture -> transcript -> Omi operational record -> LifeOS canonical record end-to-end.
 
 ## Apple Watch
 
-This upstream repository currently has no native watchOS/WatchKit target. For V1, use the iPhone app plus an Omi wearable for always-on audio. A LifeOS Watch app can be added later as a control/capture trigger, but it should not block the always-on capture path.
+Omi includes a native `omiWatchApp` target embedded in the iOS app. The watch records audio and transfers it to the paired iPhone over Apple's WatchConnectivity framework; the iPhone bridges that audio into the Flutter capture pipeline.
+
+The Watch bundle identifier inherits the iPhone identifier as `$(APP_BUNDLE_IDENTIFIER).watchapp`, so the LifeOS build helper's custom iPhone bundle ID also gives us a distinct Watch bundle automatically.
+
+After installing the signed iPhone build, install/enable the companion app on the paired Apple Watch if it does not auto-install. No separate backend is needed for the Watch: it talks to the iPhone, which talks to the LifeOS Omi backend.
