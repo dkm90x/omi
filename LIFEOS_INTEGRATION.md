@@ -2,8 +2,8 @@
 
 Status: **forked and prepared for self-hosting**
 
-Upstream: `BasedHardware/omi`  
-LifeOS fork: `dkm90x/omi`  
+Upstream: `BasedHardware/omi`
+LifeOS fork: `dkm90x/omi`
 LifeOS customization branch: `lifeos`
 
 ## Role in LifeOS
