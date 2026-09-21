@@ -36,7 +36,6 @@ abstract class Env {
 
   static String? get posthogApiKey => _instance.posthogApiKey;
 
-  // static String? get apiBaseUrl => 'https://omi-backend.ngrok.app/';
   static String? get apiBaseUrl {
     if (_apiBaseUrlOverride != null) return _apiBaseUrlOverride;
     if (_apiBaseUrlFromDefine.isNotEmpty) return _apiBaseUrlFromDefine;
@@ -84,8 +83,9 @@ abstract class Env {
     }
   }
 
-  /// Production-family packages have one pinned backend authority. This runs
-  /// during startup so a misconfigured signing group fails before networking.
+  /// Production-family packages have a pinned backend authority. LifeOS is an
+  /// explicit production-family profile whose authority is supplied at build
+  /// time so our signed app can talk to our own HTTPS backend.
   static void validateStartupRouting({
     required bool productionFamily,
     String? configuredApiBaseUrl,
@@ -100,7 +100,7 @@ abstract class Env {
       if (!_isLocalDevelopmentApi(normalized)) {
         throw StateError(
           'Profile local_dev requires a loopback or private-network API endpoint; '
-          'use mobile_beta for https://api.omiapi.com/.',
+          'use lifeos for the self-hosted HTTPS backend or mobile_beta for https://api.omiapi.com/.',
         );
       }
       return;
@@ -113,6 +113,18 @@ abstract class Env {
       final uri = Uri.tryParse(normalized);
       if (uri == null || uri.host.isEmpty || (uri.scheme != 'http' && uri.scheme != 'https')) {
         throw StateError('Profile local_prod requires a valid http(s) API endpoint.');
+      }
+      return;
+    }
+
+    if (effectiveProfile == AppEnvironmentProfile.lifeOs) {
+      final uri = Uri.tryParse(normalized);
+      if (uri == null || uri.scheme != 'https' || uri.host.isEmpty) {
+        throw StateError('Profile lifeos requires a valid HTTPS API endpoint.');
+      }
+      final host = uri.host.toLowerCase();
+      if (host == 'lifeos.invalid' || host == 'api.omi.me' || host == 'api.omiapi.com') {
+        throw StateError('Profile lifeos must point to the LifeOS-owned backend, not an Omi managed-cloud endpoint.');
       }
       return;
     }
@@ -142,11 +154,6 @@ abstract class Env {
     return first == 10 ||
         (first == 172 && second >= 16 && second <= 31) ||
         (first == 192 && second == 168) ||
-        // 100.64.0.0/10 — RFC 6598 shared address space, the range Tailscale
-        // assigns. Included because a physical device has no other route to a
-        // developer's local harness: the harness binds loopback only by design,
-        // so the device cannot use 127.x, and a plain LAN address does not reach
-        // it either. Bounded to the real /10 — 100.63.x and 100.128.x are public.
         (first == 100 && second >= 64 && second <= 127) ||
         (first == 127);
   }
@@ -161,9 +168,9 @@ abstract class Env {
 
   static String? get googleClientSecret => _instance.googleClientSecret;
 
-  static bool get useWebAuth => _instance.useWebAuth ?? false;
+  static bool? get useWebAuth => _instance.useWebAuth ?? false;
 
-  static bool get useAuthCustomToken => _instance.useAuthCustomToken ?? false;
+  static bool? get useAuthCustomToken => _instance.useAuthCustomToken ?? false;
 }
 
 abstract class EnvFields {
