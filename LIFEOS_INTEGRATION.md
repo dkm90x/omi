@@ -8,7 +8,7 @@ LifeOS customization branch: `lifeos`
 
 ## Role in LifeOS
 
-Omi is the always-on sensing and capture layer: microphones, wearable connectivity, phone capture, transcripts, screen capture where supported, and event generation.
+Omi is the always-on sensing and capture layer: microphones, wearable connectivity, phone and Apple Watch capture, transcripts, screen capture where supported, and event generation.
 
 LifeOS remains the system of record and synthesis layer. Omi data should arrive in LifeOS as immutable source material, then flow through LifeOS entity resolution, claims/memories/relationships, project assignment, summaries, search, and agent context.
 
@@ -42,6 +42,8 @@ After a successful build:
 ios-deploy --bundle build/ios/iphoneos/Runner.app
 ```
 
+The Xcode project embeds the native `omiWatchApp` target in the iPhone app. Its bundle ID is derived as `$(APP_BUNDLE_IDENTIFIER).watchapp`; Watch audio travels to the paired iPhone over WatchConnectivity and then into the same Omi capture pipeline. If the Watch companion does not auto-install, enable it from the Watch app on the paired iPhone.
+
 ## Deployment
 
 See `backend/deploy/lifeos/README.md`.
@@ -53,5 +55,5 @@ See `backend/deploy/lifeos/README.md`.
 - configure transcription/model providers
 - deploy the Omi API + Redis stack
 - add and test the LifeOS ingestion projection
-- build/install the signed iPhone app
+- build/install the signed iPhone + Apple Watch apps
 - run an end-to-end capture test
