@@ -1,0 +1,12 @@
+name: Build system contract
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate project build record
+        run: python3 scripts/validate-build-record.py .
