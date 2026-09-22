@@ -1,3 +1,7 @@
+# Canonical build system
+
+Before following the repository router below, read `.build/manifest.json`, `.build/CONSTITUTION.md`, and `.build/STATE.md`, then apply the canonical constitutions from `dkm90x/builder-guide`. Preserve all existing component-specific Omi rules. Before ending meaningful work, update `.build/STATE.md` and `.build/EVIDENCE.md`.
+
 # Omi agent guide
 
 Read the guide for the area you are changing. `CLAUDE.md` points here.
