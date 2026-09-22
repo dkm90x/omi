@@ -1,0 +1,28 @@
+{
+  "buildSystemVersion": "1.0",
+  "canonicalRepository": "https://github.com/dkm90x/builder-guide",
+  "project": {
+    "name": "omi",
+    "status": "active"
+  },
+  "constitutions": [
+    "MOBILE_APP",
+    "DESKTOP_LOCAL_CONTROL",
+    "WEB_PRODUCT",
+    "INFRASTRUCTURE_REMOTE_ACCESS",
+    "AI_DATA_RESEARCH"
+  ],
+  "qualityGates": {
+    "automatedTests": "component-specific + make preflight",
+    "endToEnd": "required where applicable",
+    "securityReview": "risk-scaled",
+    "recoveryCheck": "risk-scaled"
+  },
+  "entryPoints": {
+    "agent": "AGENTS.md",
+    "product": "PRODUCT.md",
+    "constitution": ".build/CONSTITUTION.md",
+    "state": ".build/STATE.md",
+    "evidence": ".build/EVIDENCE.md"
+  }
+}
