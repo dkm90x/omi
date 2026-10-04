@@ -2,7 +2,16 @@
 ///
 /// A profile is intentionally selected at build time. The default for the
 /// `dev` flavor is local emulators; access to production Firebase identity and
-/// data requires the explicit `mobile_beta` profile.
+/// data requires an explicit production-family profile.
+const _lifeOsApiBaseUrl = String.fromEnvironment(
+  'OMI_API_BASE_URL',
+  defaultValue: 'https://lifeos.invalid/',
+);
+const _lifeOsFirebaseProjectId = String.fromEnvironment(
+  'LIFEOS_FIREBASE_PROJECT_ID',
+  defaultValue: 'lifeos-omi',
+);
+
 enum AppEnvironmentProfile {
   localDev(
     name: 'local_dev',
@@ -17,6 +26,14 @@ enum AppEnvironmentProfile {
     defaultApiBaseUrl: 'http://127.0.0.1:8000/',
     firebaseProjectId: 'based-hardware',
     authCallbackScheme: 'omi',
+    usesFirebaseAuthEmulator: false,
+    allowsProductionData: true,
+  ),
+  lifeOs(
+    name: 'lifeos',
+    defaultApiBaseUrl: _lifeOsApiBaseUrl,
+    firebaseProjectId: _lifeOsFirebaseProjectId,
+    authCallbackScheme: 'lifeos-omi',
     usesFirebaseAuthEmulator: false,
     allowsProductionData: true,
   ),
@@ -63,7 +80,7 @@ enum AppEnvironmentProfile {
       (profile) => profile.name == requested,
       orElse: () => throw StateError(
         'Unknown OMI_APP_PROFILE "$requested". '
-        'Use local_dev, mobile_beta, or production.',
+        'Use local_dev, local_prod, lifeos, mobile_beta, or production.',
       ),
     );
   }

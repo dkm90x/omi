@@ -1,0 +1,63 @@
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --requirepass
+      - "${REDIS_PASSWORD}"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  omi-api:
+    build:
+      context: ../../..
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      OMI_ENV_STAGE: prod
+      ENVIRONMENT: production
+      BASE_API_URL: "https://${OMI_HOST}"
+      API_BASE_URL: "https://${OMI_HOST}"
+      REDIS_DB_HOST: redis
+      REDIS_DB_PORT: "6379"
+      REDIS_DB_PASSWORD: "${REDIS_PASSWORD}"
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/firebase-service-account.json
+    volumes:
+      - ./secrets/firebase-service-account.json:/run/secrets/firebase-service-account.json:ro
+      - omi-sync:/app/syncing
+    depends_on:
+      redis:
+        condition: service_healthy
+    expose:
+      - "8080"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      OMI_HOST: "${OMI_HOST}"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - omi-api
+
+volumes:
+  redis-data:
+  omi-sync:
+  caddy-data:
+  caddy-config:
